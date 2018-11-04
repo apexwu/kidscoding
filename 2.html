@@ -1,0 +1,101 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="zh-tw">
+<head>
+<meta name="Generator" content="EditPlus">
+<meta name="Author" content="男丁格爾's 脫殼玩">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<title>滑入滑出時偽原地縮放圖片</title>
+<style type="text/css">
+	#abgne-block-20120427, #abgne-block-20120427 li {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	#abgne-block-20120427 {
+		position: relative;
+		top: 100px;
+		left: 100px;
+		width: 130px;	/* (圖片的寬度 +  _margin) * 數量 - _margin */
+		height: 100px;	/* 圖片的高度 */
+	}
+	#abgne-block-20120427 li {
+		position: absolute;
+	}
+	#abgne-block-20120427 li a img {
+		border: none;
+	}
+</style>
+<script type="text/javascript">
+	// 當圖片載入後才執行
+	$(window).load(function(){
+	// 先取得先關區塊及圖片的寬高
+	// 並設定每張圖片的邊距、縮放倍數及動畫速度
+	var $block = $('#abgne-block-20120427'), 
+		$li = $block.find('li'), 
+		$img = $li.find('img'),
+		_width = $img.width(), 
+		_height = $img.height(), 
+		_margin = 1.3, 
+		_ratio = 1.3, 
+		_speed = 400;
+ 
+	// 把每一個 li 橫向排列好
+	$li.each(function(i) {
+		var $this = $(this), 
+			_left = i * (_width + _margin);
+ 
+		// 先把排列後的位置記錄在 .data('position') 中
+           $this.css('left', _left).data('position', {
+			left: _left,
+			top: parseInt($this.css('top'), 10) || 0
+		});
+	}).hover(function(){	// 當滑鼠移入 $li 時
+		var $this = $(this), 
+			positionData = $this.data('position');
+ 
+		// 改變 z-index 以免被遮到, 並移動 left 及 top
+		// 同時找到 img 縮放寬高為原來的 _ratio 倍
+		$this.css('z-index', 1).stop().animate({
+			left: positionData.left - (_width * _ratio - _width) / 2,
+			top: positionData.top - (_height * _ratio - _height) / 2
+		}, _speed).find('img').stop().animate({
+			width: _width * _ratio, 
+			height: _height * _ratio
+		}, _speed);
+	}, function(){	// 當滑鼠移出 $li 時
+		var $this = $(this), 
+			positionData = $this.data('position');
+ 
+		// 還原 z-index 並移回原來的 left 及 top
+		// 同時找到 img 還原寬高
+		$this.css('z-index', 0).stop().animate({
+			left: positionData.left,
+			top: positionData.top
+		}, _speed).find('img').stop().animate({
+			width: _width, 
+			height: _height
+		}, _speed);
+	});
+});
+</script>
+</head>
+
+<body>
+<center>
+	<ul id="abgne-block-20120427">
+        <li><a href="#"><img src="images/e.png"/></a></li>
+        <li><a href="#"><img src="images/e.png"/></a></li>
+        <li><a href="#"><img src="images/e.png"/></a></li>
+      
+    </ul>
+	
+	
+</body>
+</body>
+</html>
